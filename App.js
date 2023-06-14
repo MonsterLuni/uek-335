@@ -1,19 +1,42 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useRef, Component } from "react";
 import MapView, { Marker } from "react-native-maps";
-import * as WebBrowser from "expo-web-browser";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { WebView } from "react-native-webview";
+import * as Location from 'expo-location';
+import { getDistance } from "geolib";
+
+
 
 export default function App() {
-  const [result, setResult] = useState(null);
+  //const [result, setResult] = useState(null);
 
-  const _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync(
-      "https://otool.bict.ch/login"
-    );
-    setResult(result);
-  };
+  const[location , setLocation]= useState(null);
+  const[errorMsg , setErrorMsg]= useState(null);
+  useEffect( () => {
+    (async() => {
+      let {status}= await Location.requestForegroundPermissionsAsync();
+      if (status !=='granted')
+      {
+        setErrorMsg('Permission to access locatiob was denied');
+        return; 
+      }
+      let location= await Location.getCurrentPositionAsync({});
+      setLocation(location);
+  
+    })();
+
+  },[]);
+  let text= 'Waiting...';
+  
+  if(errorMsg)
+  {
+    text(errorMsg)
+  }
+  else if(location) {
+   text = JSON.stringify(location);
+
+  }
+
 
   const bict_coords = {
     latitude: 46.95586,
@@ -25,31 +48,61 @@ export default function App() {
   const mapRef = useRef(null);
 
   const goToBict = () => {
-    mapRef.current.animateToRegion(bict_coords, 3 * 1000);
+    mapRef.current.animateToRegion(bict_coords, 1 * 1000);
   };
+
+  const calculateDistance = () => {
+    if (location) {
+      const currentCoords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+
+      const distance = getDistance(currentCoords, bict_coords);
+      const distanceInKm = distance / 1000;
+
+      return `${distanceInKm} KM`;
+    }
+
+    return '';
+  };
+
+  const distanceToBict = calculateDistance();
+
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>BiCT AG</Text>
-      <Text style={styles.roast}>Dein Lohn: 0! 💀</Text>
+
+      <Text>BiCT Distance: {distanceToBict}</Text>
+
       <MapView
-        ref={mapRef}
-        style={styles.map}
-        showsUserLocation={true}
-        followsUserLocation={true}
+      ref={mapRef}
+      showsMyLocationButton= {true}
+      showsUserLocation= {true}
+      style={styles.map}
+      initialRegion={{
+        latitude: 46.95586,
+        longitude: 7.47572,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }}
+      
       >
+
         <Marker coordinate={bict_coords} style={styles.marker}>
           <CustomMarker />
         </Marker>
+        
       </MapView>
+
       <Button
         onPress={() => goToBict()}
         title="Nach BiCT"
         style={styles.home}
       ></Button>
-      <Button title="Otool öffnen" onPress={_handlePressButtonAsync} />
-      <WebView source={{ uri: "https://otool.bict.ch/" }} />
-      <StatusBar style="auto" />
+        
+
+
     </View>
   );
 }
