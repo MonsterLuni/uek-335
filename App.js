@@ -11,6 +11,8 @@ import { Camera } from "expo-camera";
 import { FontAwesome } from "@expo/vector-icons";
 
 export default function App() {
+  const ref = React.useRef(null);
+
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
@@ -25,6 +27,16 @@ export default function App() {
     if (camera) {
       const data = await camera.takePictureAsync(null);
       setImage(data.uri);
+    }
+  };
+
+  const [isActive, setIsActive] = useState(false);
+
+  const showPicture = () => {
+    if (isActive === false) {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
     }
   };
 
@@ -65,8 +77,13 @@ export default function App() {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity onPress={takePicture}>
-        {image && <Image source={{ uri: image }} style={styles.pre_img} />}
+      <TouchableOpacity onPress={showPicture}>
+        {image && (
+          <Image
+            source={{ uri: image }}
+            style={isActive ? styles.preImg : styles.preImgGreat}
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -111,12 +128,20 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 15,
   },
-  pre_img: {
+  preImg: {
     position: "absolute",
     height: 70,
     width: 50,
     bottom: 45,
     left: 10,
+    borderRadius: 10,
+  },
+  preImgGreat: {
+    position: "absolute",
+    height: 850,
+    width: 400,
+    bottom: 10,
+    left: 8,
     borderRadius: 10,
   },
 });
