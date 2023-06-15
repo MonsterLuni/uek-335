@@ -61,14 +61,19 @@ export default function App() {
       const distance = getDistance(currentCoords, bict_coords);
       const distanceInKm = distance / 1000;
 
-      return `${distanceInKm} KM`;
+      if(distanceInKm < 0.05) {
+        return 'Present'
+      }
+
+      else{return `${distanceInKm} KM`;}
+
+      
     }
 
     return '';
   };
 
   const distanceToBict = calculateDistance();
-
 
   return (
     <View style={styles.container}>
