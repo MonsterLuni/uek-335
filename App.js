@@ -3,11 +3,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome } from "@expo/vector-icons";
 
-import ClassicsScreen from "./ClassicsScreen";
-import MapScreen from "./MapScreen";
-import HomeScreen from "./HomeScreen";
-import CameraScreen from "./CameraScreen";
-import SalaryScreen from "./SalaryScreen";
+import ClassicsScreen from "./Pages/ClassicsScreen";
+import MapScreen from "./Pages/MapScreen";
+import HomeScreen from "./Pages/HomeScreen";
+import CameraScreen from "./Pages/CameraScreen";
+import SalaryScreen from "./Pages/SalaryScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +16,14 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
+          "tabBarActiveTintColor": "#30348c",
+          "tabBarInactiveTintColor": "gray",
+          "tabBarStyle": [
+            {
+              "display": "flex"
+            },
+            null
+          ],
           tabBarIcon: ({ color, size }) => {
             let iconName;
 
