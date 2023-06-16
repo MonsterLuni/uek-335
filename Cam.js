@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 export default function Cam() {
   const ref = React.useRef(null);
+  const imageRef = useRef();
 
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -44,6 +45,23 @@ export default function Cam() {
     }
   };
 
+  const onSaveImageAsync = async () => {
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: height - 155,
+        width: width,
+        quality: 1,
+      });
+
+      await MediaLibrary.saveToLibraryAsync(localUri);
+      if (localUri) {
+        alert("Saved!");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
   }
@@ -54,7 +72,10 @@ export default function Cam() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Image source={require("./img/bict_logo.png")} style={styles.bictLogo} />
+      <Image
+        source={require("./assets/img/bict_logo.png")}
+        style={styles.bictLogo}
+      />
       <View style={styles.cameraContainer}>
         <Camera
           ref={(ref) => setCamera(ref)}
@@ -73,7 +94,10 @@ export default function Cam() {
           );
         }}
       >
-        <Image style={styles.button} source={require("./icons/flip.png")} />
+        <Image
+          style={styles.button}
+          source={require("./assets/icons/flip.png")}
+        />
       </TouchableOpacity>
       <View style={styles.bar}>
         <View style={styles.btn}>
@@ -82,6 +106,9 @@ export default function Cam() {
           </TouchableOpacity>
         </View>
       </View>
+      <TouchableOpacity style={styles.saveButton} onPress={onSaveImageAsync}>
+        <FontAwesome name="camera" size={36} color="white" />
+      </TouchableOpacity>
       <TouchableOpacity onPress={showPicture}>
         {image && (
           <Image
@@ -115,6 +142,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    width: "100%",
   },
   icons: {},
   flip: {
@@ -133,6 +161,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 15,
   },
+  saveButton: {
+    position: "absolute",
+    alignSelf: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    borderRadius: 50,
+    padding: 15,
+    bottom: 45,
+    right: 10,
+  },
   preImg: {
     position: "absolute",
     height: 70,
@@ -143,9 +180,9 @@ const styles = StyleSheet.create({
   },
   preImgGreat: {
     position: "absolute",
-    height: Dimensions.get("window").height,
+    height: Dimensions.get("window").height - 155,
     width: Dimensions.get("window").width,
-    bottom: 0,
+    bottom: 120,
     left: 0,
     borderRadius: 10,
   },
