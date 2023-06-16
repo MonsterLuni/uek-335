@@ -73,7 +73,7 @@ export default function Cam() {
   return (
     <View style={{ flex: 1 }}>
       <Image
-        source={require("./assets/img/bict_logo.png")}
+        source={require("./assets/img/bict.png")}
         style={styles.bictLogo}
       />
       <View style={styles.cameraContainer}>
@@ -96,7 +96,7 @@ export default function Cam() {
       >
         <Image
           style={styles.button}
-          source={require("./assets/icons/flip.png")}
+          source={require("./assets/icons/flipcam.png")}
         />
       </TouchableOpacity>
       <View style={styles.bar}>
