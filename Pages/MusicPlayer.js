@@ -12,8 +12,8 @@ export default function MusicPlayer() {
   const [title, setTitle] = useState("-");
   const [author, setAuthor] = useState("-");
   const [image, setImage] = useState(require("../assets/img/Default.png"));
-  const [playTime, setPlayTime] = useState("-");
-  const [alreadyPlayed, setalreadyPlayed] = useState("-")
+  const [playTime, setPlayTime] = useState();
+  const [alreadyPlayed, setalreadyPlayed] = useState(0)
 
   const songs = [
     {
@@ -50,10 +50,13 @@ export default function MusicPlayer() {
 
   async function startSong(forceReload, id = songId){
     let startsound = sound;
+    let duration = playTime;
     if(!startsound || forceReload){
       console.log(id);
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
+      duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
       setSound(startsound);
+      setPlayTime(((duration / 1000)/60).toFixed(2));
       setSongId(id);
       setAuthor(songs[id].author)
       setTitle(songs[id].title)
@@ -65,6 +68,7 @@ export default function MusicPlayer() {
 
   function stopSong(){
     if(!sound) return
+    console.log(playTime);
     sound.pauseAsync();
     setPlayState(false);
   }
@@ -105,6 +109,6 @@ const styles = StyleSheet.create({
   image: {
     height: 200,
     width: 200,
-    borderRadius: 100
+    borderRadius: 20
   }
 });
