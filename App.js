@@ -76,7 +76,7 @@ export default function App() {
         
       }
 
-      //console.log(lohn * selectedMonth);
+      
       return `${lohn * selectedMonth} .-`
 }
 
@@ -154,10 +154,11 @@ const styles = StyleSheet.create({
     marginBottom: -10,
   },
   dropdown: {
-    width: 200,
-    height: 40,
-    borderColor: '#333',
-    borderWidth: 1,
+    width: 250,
+    marginBottom: 20,
+    backgroundColor: 'lightgrey',
+    
+
   },
   title: {
     fontSize: 24,
