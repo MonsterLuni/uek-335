@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { Camera, FaceDetectionResult } from "expo-camera";
-import { manipulateAsync, FlipType, SaveFormat } from "expo-image-manipulator";
 import { FontAwesome } from "@expo/vector-icons";
 
 export default function Cam() {
@@ -11,6 +17,8 @@ export default function Cam() {
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
+
+  const { width, height } = Dimensions.get("window");
 
   useEffect(() => {
     (async () => {
@@ -135,10 +143,10 @@ const styles = StyleSheet.create({
   },
   preImgGreat: {
     position: "absolute",
-    height: 850,
-    width: 400,
-    bottom: 10,
-    left: 8,
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width,
+    bottom: 0,
+    left: 0,
     borderRadius: 10,
   },
   bictLogo: {
