@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-export default function App() {
+export default function Salary() {
   const [selectedProfession, setSelectedProfession] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');

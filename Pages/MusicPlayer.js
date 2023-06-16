@@ -16,17 +16,17 @@ export default function MusicPlayer() {
     {
       title: "HOME",
       author: "Resonance",
-      path: require("./assets/Music/Resonance.mp3")
+      path: require("../assets/Music/Resonance.mp3")
     },
     {
       title: "Drinking Water",
       author: "Frank Sinatra, Antônio Carlos Jobim",
-      path: require("./assets/Music/Drinking_Water.mp3")
+      path: require("../assets/Music/Drinking_Water.mp3")
     },
     {
       title: "Fart",
       author: "Fartigal",
-      path: require("./assets/Music/fart.mp3")
+      path: require("../assets/Music/fart.mp3")
     }
   ]
 
