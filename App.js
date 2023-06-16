@@ -5,39 +5,69 @@ import { Audio } from 'expo-av'
 
 export default function App() {
 
-  const [sound, setSound] = useState();
-  var [Status, setStatus] = useState(false);
-  var [Statusmessage, setStatusmessage] = useState("Play Song");
-  var [loading, setloading] = useState(true);
+  const [playState, setPlayState] = useState(false);
+  const [songId, setSongId] = useState(0);
+  const [sound, setSound] = useState(null);
+  // Ab hier Konstanten für Text
+  const [title, setTitle] = useState("-");
+  const [author, setAuthor] = useState("-");
 
-  async function changestateofSound() {
-    if(Status == true){
-      sound.pauseAsync();
-      console.log("GESTOPPT");
-      setStatusmessage("Resume Song")
-      setStatus(false);
+  const songs = [
+    {
+      title: "HOME",
+      author: "Resonance",
+      path: require("./assets/Music/Resonance.mp3")
+    },
+    {
+      title: "Drinking Water",
+      author: "Frank Sinatra, Antônio Carlos Jobim",
+      path: require("./assets/Music/Drinking_Water.mp3")
+    },
+    {
+      title: "Fart",
+      author: "Fartigal",
+      path: require("./assets/Music/fart.mp3")
     }
-    else{
-      if(loading == true){
-        console.log('Loading Sound');
-        const {sound} = await Audio.Sound.createAsync(require("./assets/Music/Drinking_Water.mp3"));
-        setSound(sound);
-        console.log('Playing Sound');
-        await sound.playAsync();
-        setloading(false);
-      }
-      else{
-        sound.playAsync();
-      }
-      setStatusmessage("Pause Song")
-      setStatus(true);
+  ]
+
+  async function startSong(forceReload, id = songId){
+    let startsound = sound;
+    if(!startsound || forceReload){
+      console.log(id);
+      startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
+      setSound(startsound);
+      setSongId(id);
+      setAuthor(songs[id].author)
+      setTitle(songs[id].title)
     }
+    await startsound.playAsync();
+    setPlayState(true);
   }
 
+  function stopSong(){
+    if(!sound) return
+    sound.pauseAsync();
+    setPlayState(false);
+  }
+  function nextSong(){
+    stopSong();
+    startSong(true, (songId + 1) % songs.length);
+  }
+  function previousSong(){
+    stopSong();
+    startSong(true, Math.abs((songId - 1) % songs.length));
+  }
+  
   return (
     <View style={styles.container}>
       <Text>Dies wird der MusicPlayer!</Text>
-      <Button title={(Statusmessage)} onPress={changestateofSound} />
+      <Text>Title: {title}</Text>
+      <Text>Author: {author}</Text>
+      <Button title={(playState ? "pause" : "start")} onPress={playState ? stopSong : startSong} />
+      <Text></Text>
+      <Button title="Next Song" onPress={nextSong}/>
+      <Text></Text>
+      <Button title="Previous Song" onPress={previousSong}/>
       <StatusBar style="auto" />
     </View>
   );
