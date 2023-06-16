@@ -3,11 +3,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome } from "@expo/vector-icons";
 
-import ClassicsScreen from "./Pages/ClassicsScreen";
-import MapScreen from "./Pages/MapScreen";
-import HomeScreen from "./Pages/HomeScreen";
-import CameraScreen from "./Pages/CameraScreen";
-import SalaryScreen from "./Pages/SalaryScreen";
+
+import Salary from "./Pages/Salary";
+import Cam from "./Pages/Cam";
+import Map from "./Pages/Map";
+import MusicPlayer from "./Pages/MusicPlayer";
+import Home from "./Pages/Home";
 
 const Tab = createBottomTabNavigator();
 
@@ -47,11 +48,11 @@ export default function App() {
           inactiveTintColor: "gray",
         }}
       >
-        <Tab.Screen name="Classics" component={ClassicsScreen} />
-        <Tab.Screen name="Map" component={MapScreen} />
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Camera" component={CameraScreen} />
-        <Tab.Screen name="Salary" component={SalaryScreen} />
+        <Tab.Screen name="Classics" component={MusicPlayer} />
+        <Tab.Screen name="Map" component={Map} />
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Camera" component={Cam} />
+        <Tab.Screen name="Salary" component={Salary} />
       </Tab.Navigator>
     </NavigationContainer>
   );
