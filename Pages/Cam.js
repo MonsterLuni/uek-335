@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Camera, FaceDetectionResult } from "expo-camera";
-import { FontAwesome } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Cam() {
   const ref = React.useRef(null);
@@ -94,20 +94,20 @@ export default function Cam() {
           );
         }}
       >
-        <Image
-          style={styles.button}
-          source={require("../assets/icons/flipcam.png")}
-        />
+        <MaterialCommunityIcons name="camera-flip" size={36} color="white" />
       </TouchableOpacity>
       <View style={styles.bar}>
         <View style={styles.btn}>
           <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-            <FontAwesome name="camera" size={36} color="white" />
+            <MaterialCommunityIcons name="camera" size={36} color="white" />
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.saveButton} onPress={onSaveImageAsync}>
-        <FontAwesome name="camera" size={36} color="white" />
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={console.log("ScreenShot")}
+      >
+        <MaterialCommunityIcons name="download" size={36} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={showPicture}>
         {image && (
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   bar: {
     flex: 1,
     position: "absolute",
-    bottom: 40,
+    bottom: 0,
     width: "100%",
     height: 80,
     backgroundColor: "rgba(0, 0, 0, .7)",
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
   flip: {
     size: 36,
     position: "absolute",
-    top: 50,
-    right: 10,
+    top: 15,
+    right: 15,
     backgroundColor: "rgba(255, 255, 255, 0.4)",
     borderRadius: 50,
     padding: 15,
@@ -167,29 +167,29 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.4)",
     borderRadius: 50,
     padding: 15,
-    bottom: 45,
-    right: 10,
+    bottom: 5,
+    right: 15,
   },
   preImg: {
     position: "absolute",
     height: 70,
     width: 50,
-    bottom: 45,
-    left: 10,
+    bottom: 5,
+    left: 15,
     borderRadius: 10,
   },
   preImgGreat: {
     position: "absolute",
-    height: Dimensions.get("window").height - 155,
+    height: Dimensions.get("window").height - 240,
     width: Dimensions.get("window").width,
-    bottom: 120,
+    bottom: 80,
     left: 0,
     borderRadius: 10,
   },
   bictLogo: {
     position: "absolute",
-    top: 60,
-    left: 20,
+    top: 10,
+    left: 10,
     height: 98,
     width: 233,
     zIndex: 3,
