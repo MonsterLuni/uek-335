@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { Camera } from "expo-camera";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { Camera, FaceDetectionResult } from "expo-camera";
+import { manipulateAsync, FlipType, SaveFormat } from "expo-image-manipulator";
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function App() {
+export default function Cam() {
   const ref = React.useRef(null);
 
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
+
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === "granted");
     })();
   }, []);
+
   const takePicture = async () => {
     if (camera) {
       const data = await camera.takePictureAsync(null);
@@ -30,7 +26,7 @@ export default function App() {
     }
   };
 
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   const showPicture = () => {
     if (isActive === false) {
@@ -50,6 +46,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Image source={require("./img/bict_logo.png")} style={styles.bictLogo} />
       <View style={styles.cameraContainer}>
         <Camera
           ref={(ref) => setCamera(ref)}
@@ -143,5 +140,14 @@ const styles = StyleSheet.create({
     bottom: 10,
     left: 8,
     borderRadius: 10,
+  },
+  bictLogo: {
+    position: "absolute",
+    top: 60,
+    left: 20,
+    height: 98,
+    width: 233,
+    zIndex: 3,
+    elevation: 3,
   },
 });
