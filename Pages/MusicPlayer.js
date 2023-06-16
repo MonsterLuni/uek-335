@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { Audio } from 'expo-av'
 
 export default function MusicPlayer() {
@@ -11,22 +11,40 @@ export default function MusicPlayer() {
   // Ab hier Konstanten für Text
   const [title, setTitle] = useState("-");
   const [author, setAuthor] = useState("-");
+  const [image, setImage] = useState(require("../assets/img/Default.png"));
+  const [playTime, setPlayTime] = useState("-");
+  const [alreadyPlayed, setalreadyPlayed] = useState("-")
 
   const songs = [
     {
       title: "HOME",
       author: "Resonance",
-      path: require("../assets/Music/Resonance.mp3")
+      path: require("../assets/Music/Resonance.mp3"),
+      image: require("../assets/img/Resonance.png")
     },
     {
       title: "Drinking Water",
       author: "Frank Sinatra, Antônio Carlos Jobim",
-      path: require("../assets/Music/Drinking_Water.mp3")
+      path: require("../assets/Music/Drinking_Water.mp3"),
+      image: require("../assets/img/Drinking_Water.png")
     },
     {
       title: "Fart",
       author: "Fartigal",
-      path: require("../assets/Music/fart.mp3")
+      path: require("../assets/Music/fart.mp3"),
+      image: require("../assets/img/fart.png")
+    },
+    {
+      title: "I Know",
+      author: "Kanii",
+      path: require("../assets/Music/I_Know.mp3"),
+      image: require("../assets/img/I_Know.png")
+    },
+    {
+      title: "Sway",
+      author: "Michael Bublé",
+      path: require("../assets/Music/Sway.mp3"),
+      image: require("../assets/img/Sway.png")
     }
   ]
 
@@ -39,6 +57,7 @@ export default function MusicPlayer() {
       setSongId(id);
       setAuthor(songs[id].author)
       setTitle(songs[id].title)
+      setImage(songs[id].image)
     }
     await startsound.playAsync();
     setPlayState(true);
@@ -61,8 +80,11 @@ export default function MusicPlayer() {
   return (
     <View style={styles.container}>
       <Text>Dies wird der MusicPlayer!</Text>
+      <Image style={styles.image} source={image}/>
       <Text>Title: {title}</Text>
       <Text>Author: {author}</Text>
+      <Text>Playtime: {playTime}</Text>
+      <Text>Already Played: {alreadyPlayed}</Text>
       <Button title={(playState ? "pause" : "start")} onPress={playState ? stopSong : startSong} />
       <Text></Text>
       <Button title="Next Song" onPress={nextSong}/>
@@ -80,4 +102,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  image: {
+    height: 200,
+    width: 200,
+    borderRadius: 100
+  }
 });
