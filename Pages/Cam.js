@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,12 +7,16 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { Camera, FaceDetectionResult } from "expo-camera";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import { captureRef, capture } from "react-native-view-shot";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Cam() {
   const ref = React.useRef(null);
   const imageRef = useRef();
+
+  const [status, requestPermission] = MediaLibrary.usePermissions();
 
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -20,6 +24,10 @@ export default function Cam() {
   const [type, setType] = useState(Camera.Constants.Type.front);
 
   const { width, height } = Dimensions.get("window");
+
+  if (status === null) {
+    requestPermission();
+  }
 
   useEffect(() => {
     (async () => {
@@ -32,6 +40,7 @@ export default function Cam() {
     if (camera) {
       const data = await camera.takePictureAsync(null);
       setImage(data.uri);
+      MediaLibrary.saveToLibraryAsync(data.uri);
     }
   };
 
@@ -103,10 +112,7 @@ export default function Cam() {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={console.log("ScreenShot")}
-      >
+      <TouchableOpacity style={styles.saveButton}>
         <MaterialCommunityIcons name="download" size={36} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={showPicture}>
@@ -125,6 +131,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     height: 100,
+    elevation: -1,
+    zIndex: -1,
   },
   fixedRatio: {
     flex: 1,
@@ -192,7 +200,5 @@ const styles = StyleSheet.create({
     left: 10,
     height: 98,
     width: 233,
-    zIndex: 3,
-    elevation: 3,
   },
 });
