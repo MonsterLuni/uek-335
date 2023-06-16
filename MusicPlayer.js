@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Audio } from 'expo-av'
 
-export default function App() {
+export default function MusicPlayer() {
 
   const [playState, setPlayState] = useState(false);
   const [songId, setSongId] = useState(0);
