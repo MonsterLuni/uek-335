@@ -48,11 +48,12 @@ export default function MusicPlayer() {
     }
   ]
 
-  async function startSong(forceReload, id = songId){
+  async function startSong(forceReload = false, id = songId){
     let startsound = sound;
     let duration = playTime;
-    if(!startsound || forceReload){
+    if(!startsound || forceReload == true){
       console.log(id);
+      console.log("Hallo, ich bin in StartSound");
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
       duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
       setSound(startsound);
@@ -69,6 +70,7 @@ export default function MusicPlayer() {
   function stopSong(){
     if(!sound) return
     console.log(playTime);
+    console.log("Hallo, ich bin in StopSong");
     sound.pauseAsync();
     setPlayState(false);
   }
