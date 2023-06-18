@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import { Audio } from 'expo-av'
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { Audio } from 'expo-av';
+import { FontAwesome} from '@expo/vector-icons';
 
 export default function MusicPlayer() {
 
@@ -50,14 +51,13 @@ export default function MusicPlayer() {
 
   async function startSong(forceReload = false, id = songId){
     let startsound = sound;
-    let duration = playTime;
     if(!startsound || forceReload == true){
       console.log(id);
       console.log("Hallo, ich bin in StartSound");
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
       duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
       setSound(startsound);
-      setPlayTime(((duration / 1000)/60).toFixed(2));
+      setPlayTime(((duration / 1000)/60).toFixed(2).replace(".",":").padStart(5,"0"));
       setSongId(id);
       setAuthor(songs[id].author)
       setTitle(songs[id].title)
@@ -69,7 +69,6 @@ export default function MusicPlayer() {
 
   function stopSong(){
     if(!sound) return
-    console.log(playTime);
     console.log("Hallo, ich bin in StopSong");
     sound.pauseAsync();
     setPlayState(false);
@@ -85,18 +84,31 @@ export default function MusicPlayer() {
   
   return (
     <View style={styles.container}>
-      <Text>Dies wird der MusicPlayer!</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>BiCT Classics</Text>
+        <View style={styles.separator} />
+      </View>
+      <Text>{author}</Text>
       <Image style={styles.image} source={image}/>
-      <Text>Title: {title}</Text>
-      <Text>Author: {author}</Text>
-      <Text>Playtime: {playTime}</Text>
+      <Text style={styles.songtitle}>{title}</Text>
+      <Text>{playTime}</Text>
       <Text>Already Played: {alreadyPlayed}</Text>
-      <Button title={(playState ? "pause" : "start")} onPress={playState ? stopSong : startSong} />
-      <Text></Text>
-      <Button title="Next Song" onPress={nextSong}/>
-      <Text></Text>
-      <Button title="Previous Song" onPress={previousSong}/>
-      <StatusBar style="auto" />
+      <View style={styles.controller}>
+        <TouchableHighlight onPress={previousSong}>
+          <View>
+            <FontAwesome name='backward' size={30} color={"#919191"}/>
+          </View>
+        </TouchableHighlight>
+  
+        <TouchableOpacity style={styles.startPause} onPress={playState ? stopSong : startSong}></TouchableOpacity>
+
+        <TouchableHighlight onPress={nextSong}>
+          <View>
+            <FontAwesome name='forward' size={30} color={"#919191"}/>
+          </View>
+        </TouchableHighlight>
+      </View>
+      <StatusBar style="auto"/>
     </View>
   );
 }
@@ -106,11 +118,49 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 60,
+    paddingBottom: 20,
   },
   image: {
+    marginTop: 20,
     height: 200,
     width: 200,
-    borderRadius: 20
+    borderRadius: 100
+  },
+  songtitle: {
+    marginTop: 20,
+    fontSize: 30
+  },
+  header: {
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#30348c",
+    marginBottom: 10,
+  },
+  separator: {
+    width: 200,
+    height: 2,
+    backgroundColor: "#30348c",
+    marginBottom: 20,
+  },
+  startPause: {
+    backgroundColor: "#9D9D9D",
+    opacity: 100,
+    height: 100,
+    width: 100,
+    borderRadius: 100,
+    marginLeft: 20,
+    marginRight: 20
+  },
+  controller: {
+    width: "60%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   }
 });
