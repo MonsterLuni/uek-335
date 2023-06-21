@@ -1,23 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { Audio } from 'expo-av';
 import { FontAwesome} from '@expo/vector-icons';
-import Slider, {} from '@react-native-community/slider';
+import Slider from '@react-native-community/slider';
 
 export default function MusicPlayer() {
 
+  //All Constants that are used with useStates
   const [playState, setPlayState] = useState(false);
   const [songId, setSongId] = useState(0);
   const [sound, setSound] = useState(null);
-  // Ab hier Konstanten für Text
   const [title, setTitle] = useState("-");
   const [author, setAuthor] = useState("-");
   const [image, setImage] = useState(require("../assets/img/Default.png"));
   const [playTime, setPlayTime] = useState("00:00");
   const [playTimeSeconds, setPlayTimeSeconds] = useState();
+  const [alreadyPlayed, setalreadyPlayed] = useState("00:00");
   const [alreadyPlayedSeconds, setalreadyPlayedSeconds] = useState(0);
 
+  //Array for all Songs that should be playable
   const songs = [
     {
       title: "HOME",
@@ -27,7 +29,7 @@ export default function MusicPlayer() {
     },
     {
       title: "Drinking Water",
-      author: "Frank Sinatra, Antônio Carlos Jobim",
+      author: "Frank Sinatra · Antônio Carlos Jobim",
       path: require("../assets/Music/Drinking_Water.mp3"),
       image: require("../assets/img/Drinking_Water.png")
     },
@@ -36,6 +38,12 @@ export default function MusicPlayer() {
       author: "Fartigal",
       path: require("../assets/Music/fart.mp3"),
       image: require("../assets/img/fart.png")
+    },
+    {
+      title: "Annihilate",
+      author: "Swae Lee · Lil Wayne",
+      path:require("../assets/Music/Annihilate.mp3"),
+      image: require("../assets/img/Annihilate.png")
     },
     {
       title: "I Know",
@@ -51,6 +59,7 @@ export default function MusicPlayer() {
     }
   ]
 
+  //Function to Start a song, if (forcereload) is true, it's playing a new one
   async function startSong(forceReload = false, id = songId){
     let startsound = sound;
     if(!startsound || forceReload == true){
@@ -58,7 +67,7 @@ export default function MusicPlayer() {
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
       duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
       setSound(startsound);
-      setPlayTime(((duration / 1000)/60).toFixed(2).replace(".",":").padStart(5,"0"));
+      setPlayTime(((duration / 1000)/60).toFixed(2).slice(0,-3).padStart(2,"0") + ":" + ((duration/1000) % 60).toFixed(0).padStart(2,"0"));
       setPlayTimeSeconds(duration/1000);
       setSongId(id);
       setAuthor(songs[id].author)
@@ -72,22 +81,28 @@ export default function MusicPlayer() {
     setPlayState(true);
   }
 
+  //Is stopping a sound, sets playstate to (false)
   function stopSong(){
     if(!sound) return
     sound.pauseAsync();
     setPlayState(false);
   }
+
+  //Is going to the next sound, if it hits the end, it's going for the first song in the array.
   function nextSong(){
     stopSong();
     setalreadyPlayedSeconds(0);
     startSong(true, (songId + 1) % songs.length);
   }
+
+  //Is going to the last song, doesn't break if it hits ID = 0
   function previousSong(){
     stopSong();
     setalreadyPlayedSeconds(0);
     startSong(true, Math.abs((songId - 1) % songs.length));
   }
 
+  //This handles the passing seconds that a sound already played
   useEffect(() => {
     let id;
     if(playState){
@@ -103,19 +118,24 @@ export default function MusicPlayer() {
     return () => {
       clearInterval(id);
     };
+    //Here is the useState for that the function updates
   }, [playState]);
 
+  //Is for checking if the song is finished, if it is it's going to the function (nextSong())
   useEffect(() => {
-    if(alreadyPlayedSeconds > playTimeSeconds + 1){
+    if(alreadyPlayedSeconds > playTimeSeconds){
       nextSong();
     }
+    setalreadyPlayed(((alreadyPlayedSeconds/60).toFixed(2).slice(0,-3).padStart(2,"0")) + ":" + (alreadyPlayedSeconds % 60).toFixed(0).padStart(2,"0"))
+    //Here are the useStates for that the function updates
   }, [alreadyPlayedSeconds,playTimeSeconds])
   
+  //Here is everything that gets rendered
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>BiCT Classics</Text>
-        <View style={styles.separator} />
+        <View style={styles.separator}/>
       </View>
       <Text>{author}</Text>
       <Image style={styles.image} source={image}/>
@@ -131,7 +151,7 @@ export default function MusicPlayer() {
         minimumTrackTintColor="#5182bd"
       />
       <View style={styles.time}>
-        <Text>{alreadyPlayedSeconds}</Text>
+        <Text>{alreadyPlayed}</Text>
         <Text>{playTime}</Text>
       </View>
       <View style={styles.controller}>
@@ -154,6 +174,7 @@ export default function MusicPlayer() {
   );
 }
 
+//Here are the Styles for the Project
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -171,6 +192,7 @@ const styles = StyleSheet.create({
   },
   songtitle: {
     marginTop: 20,
+    marginBottom: 20,
     fontSize: 30
   },
   header: {
