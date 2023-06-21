@@ -14,7 +14,7 @@ export default function MusicPlayer() {
   const [title, setTitle] = useState("-");
   const [author, setAuthor] = useState("-");
   const [image, setImage] = useState(require("../assets/img/Default.png"));
-  const [playTime, setPlayTime] = useState();
+  const [playTime, setPlayTime] = useState("00:00");
   const [playTimeSeconds, setPlayTimeSeconds] = useState();
   const [alreadyPlayedSeconds, setalreadyPlayedSeconds] = useState(0);
 
@@ -76,12 +76,12 @@ export default function MusicPlayer() {
   }
   function nextSong(){
     stopSong();
-    setalreadyPlayed(0);
+    setalreadyPlayedSeconds(0);
     startSong(true, (songId + 1) % songs.length);
   }
   function previousSong(){
     stopSong();
-    setalreadyPlayed(0);
+    setalreadyPlayedSeconds(0);
     startSong(true, Math.abs((songId - 1) % songs.length));
   }
 
@@ -101,6 +101,12 @@ export default function MusicPlayer() {
       clearInterval(id);
     };
   }, [playState]);
+
+  useEffect(() => {
+    if(alreadyPlayedSeconds > playTimeSeconds + 1){
+      nextSong();
+    }
+  }, [alreadyPlayedSeconds,playTimeSeconds])
   
   return (
     <View style={styles.container}>
@@ -111,8 +117,6 @@ export default function MusicPlayer() {
       <Text>{author}</Text>
       <Image style={styles.image} source={image}/>
       <Text style={styles.songtitle}>{title}</Text>
-      <Text>Playtime: {playTime}</Text>
-      <Text>Already Played: {alreadyPlayedSeconds}</Text>
       <Slider
         style={{width: 200, height: 40}}
         minimumValue={0}
@@ -123,6 +127,10 @@ export default function MusicPlayer() {
         maximumTrackTintColor="#636363"
         minimumTrackTintColor="#5182bd"
       />
+      <View style={styles.time}>
+        <Text>{alreadyPlayedSeconds}</Text>
+        <Text>{playTime}</Text>
+      </View>
       <View style={styles.controller}>
         <TouchableHighlight onPress={previousSong}>
           <View>
@@ -192,5 +200,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  time: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: 200,
+    justifyContent: 'space-between'
   }
 });
