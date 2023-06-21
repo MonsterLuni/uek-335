@@ -72,7 +72,6 @@ export default function Cam() {
         (error) => console.error("Error ", error)
       )
       .then(cropPicture());
-
     if (isDownloadable === false && cropImageURI != "") {
       setisDownloadable(true);
     }
@@ -153,21 +152,12 @@ export default function Cam() {
   );
 }
 const styles = StyleSheet.create({
-  test: {
-    position: "absolute",
-    width: 200,
-    height: 400,
-    top: 50,
-  },
   cameraContainer: {
     flex: 1,
     flexDirection: "row",
     height: 100,
     elevation: -1,
     zIndex: -1,
-  },
-  fixedRatio: {
-    flex: 1,
   },
   bar: {
     flex: 1,
