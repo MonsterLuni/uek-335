@@ -64,8 +64,11 @@ export default function MusicPlayer() {
       setAuthor(songs[id].author)
       setTitle(songs[id].title)
       setImage(songs[id].image)
+      await startsound.playAsync();
     }
-    await startsound.playFromPositionAsync(alreadyPlayedSeconds*1000);
+    else{
+      await startsound.playFromPositionAsync(alreadyPlayedSeconds*1000);
+    }
     setPlayState(true);
   }
 
@@ -200,6 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginTop:20
   },
   time: {
     display: 'flex',
