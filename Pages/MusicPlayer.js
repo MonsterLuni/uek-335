@@ -146,7 +146,6 @@ export default function MusicPlayer() {
         value={alreadyPlayedSeconds}
         step={1}
         maximumValue={playTimeSeconds}
-        onValueChange={console.log("Already Played: " + alreadyPlayedSeconds + "s")}
         maximumTrackTintColor="#636363"
         minimumTrackTintColor="#5182bd"
       />
@@ -157,7 +156,7 @@ export default function MusicPlayer() {
       <View style={styles.controller}>
         <TouchableHighlight onPress={previousSong}>
           <View>
-            <FontAwesome name='backward' size={30} color={"#919191"}/>
+            <FontAwesome name='backward' size={30} color={"#999999"}/>
           </View>
         </TouchableHighlight>
   
@@ -165,7 +164,7 @@ export default function MusicPlayer() {
 
         <TouchableHighlight onPress={nextSong}>
           <View>
-            <FontAwesome name='forward' size={30} color={"#919191"}/>
+            <FontAwesome name='forward' size={30} color={"#999999"}/>
           </View>
         </TouchableHighlight>
       </View>
@@ -211,13 +210,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   startPause: {
-    backgroundColor: "#9D9D9D",
+    backgroundColor: "#cfcfcf",
     opacity: 100,
     height: 100,
     width: 100,
     borderRadius: 100,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
+    borderStyle: 'solid',
+    borderColor: "#999999",
+    borderWidth: 10
   },
   controller: {
     width: "60%",
