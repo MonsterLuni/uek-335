@@ -7,7 +7,6 @@ export default function Salary() {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
 
-  const professions = ['Informatiker/in EFZ', 'Mediamatiker/in EFZ'];
   const years = ['1. Lehrjahr', '2. Lehrjahr', '3. Lehrjahr', '4. Lehrjahr'];
   const months = [
     { label: '1 Monat', value: 1 },

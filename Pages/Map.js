@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect, useRef, Component } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import MapView, { Marker } from "react-native-maps";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import * as Location from 'expo-location';
 import { getDistance } from "geolib";
 
