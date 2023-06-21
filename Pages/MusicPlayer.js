@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { Audio } from 'expo-av';
 import { FontAwesome} from '@expo/vector-icons';
+import Slider, {} from '@react-native-community/slider';
 
 export default function MusicPlayer() {
 
@@ -14,7 +15,8 @@ export default function MusicPlayer() {
   const [author, setAuthor] = useState("-");
   const [image, setImage] = useState(require("../assets/img/Default.png"));
   const [playTime, setPlayTime] = useState();
-  const [alreadyPlayed, setalreadyPlayed] = useState(0)
+  const [playTimeSeconds, setPlayTimeSeconds] = useState();
+  const [alreadyPlayedSeconds, setalreadyPlayedSeconds] = useState(0);
 
   const songs = [
     {
@@ -53,34 +55,52 @@ export default function MusicPlayer() {
     let startsound = sound;
     if(!startsound || forceReload == true){
       console.log(id);
-      console.log("Hallo, ich bin in StartSound");
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
       duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
       setSound(startsound);
       setPlayTime(((duration / 1000)/60).toFixed(2).replace(".",":").padStart(5,"0"));
+      setPlayTimeSeconds(duration/1000);
       setSongId(id);
       setAuthor(songs[id].author)
       setTitle(songs[id].title)
       setImage(songs[id].image)
     }
-    await startsound.playAsync();
+    await startsound.playFromPositionAsync(alreadyPlayedSeconds*1000);
     setPlayState(true);
   }
 
   function stopSong(){
     if(!sound) return
-    console.log("Hallo, ich bin in StopSong");
     sound.pauseAsync();
     setPlayState(false);
   }
   function nextSong(){
     stopSong();
+    setalreadyPlayed(0);
     startSong(true, (songId + 1) % songs.length);
   }
   function previousSong(){
     stopSong();
+    setalreadyPlayed(0);
     startSong(true, Math.abs((songId - 1) % songs.length));
   }
+
+  useEffect(() => {
+    let id;
+    if(playState){
+      id = setInterval(() => 
+      {
+        setalreadyPlayedSeconds((alreadyPlayedSeconds) => alreadyPlayedSeconds + 1);
+      }, 1000
+      );
+    }
+    else{
+      clearInterval(id);
+    }
+    return () => {
+      clearInterval(id);
+    };
+  }, [playState]);
   
   return (
     <View style={styles.container}>
@@ -91,8 +111,18 @@ export default function MusicPlayer() {
       <Text>{author}</Text>
       <Image style={styles.image} source={image}/>
       <Text style={styles.songtitle}>{title}</Text>
-      <Text>{playTime}</Text>
-      <Text>Already Played: {alreadyPlayed}</Text>
+      <Text>Playtime: {playTime}</Text>
+      <Text>Already Played: {alreadyPlayedSeconds}</Text>
+      <Slider
+        style={{width: 200, height: 40}}
+        minimumValue={0}
+        value={alreadyPlayedSeconds}
+        step={1}
+        maximumValue={playTimeSeconds}
+        onValueChange={console.log("Already Played: " + alreadyPlayedSeconds + "s")}
+        maximumTrackTintColor="#636363"
+        minimumTrackTintColor="#5182bd"
+      />
       <View style={styles.controller}>
         <TouchableHighlight onPress={previousSong}>
           <View>
