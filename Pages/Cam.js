@@ -159,6 +159,9 @@ const styles = StyleSheet.create({
     elevation: -1,
     zIndex: -1,
   },
+  fixedRatio: {
+    flex: 1,
+  },
   bar: {
     flex: 1,
     position: "absolute",
