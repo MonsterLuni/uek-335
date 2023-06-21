@@ -27,6 +27,7 @@ export default function Cam() {
   const { width, height } = Dimensions.get("window");
 
   const [imageURI, setImageURI] = useState("");
+  const [cropImageURI, setcropImageURI] = useState("");
 
   const [isActive, setIsActive] = useState(true);
 
@@ -83,25 +84,27 @@ export default function Cam() {
         { rotate: 0 },
         {
           crop: {
-            originY: 200,
+            originY: 185,
             originX: 0,
-            height: height,
-            width: width,
+            height: height * 1.6,
+            width: width * 2,
           },
         },
       ],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
     let res = manipResult.uri;
-    setImageURI(manipResult.uri);
+    setcropImageURI(manipResult.uri);
     console.log("1 " + manipResult.uri);
-    console.log("2 " + imageURI);
+    console.log("2 " + cropImageURI);
     console.log("3 " + res);
   };
 
   const downloadPicture = () => {
     console.log("a1");
-    MediaLibrary.saveToLibraryAsync(imageURI);
+    console.log(cropImageURI);
+    MediaLibrary.saveToLibraryAsync(cropImageURI);
+    console.log("a2");
   };
 
   if (hasCameraPermission === false) {
@@ -140,15 +143,15 @@ export default function Cam() {
         <MaterialCommunityIcons name="camera-flip" size={36} color="white" />
       </TouchableOpacity>
       <View style={isActive ? styles.bar : styles.none}>
-        <View style={styles.btn}>
-          <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-            <MaterialCommunityIcons name="camera" size={36} color="white" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+          <MaterialCommunityIcons name="camera" size={36} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.saveButton} onPress={downloadPicture}>
+          <MaterialCommunityIcons name="download" size={36} color="white" />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.saveButton} onPress={downloadPicture()}>
-        <MaterialCommunityIcons name="download" size={36} color="white" />
-      </TouchableOpacity>
+
       <TouchableOpacity onPress={showPicture}>
         {image && (
           <Image
@@ -184,13 +187,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 80,
     backgroundColor: "rgba(0, 0, 0, .7)",
-  },
-  btn: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
   },
   icons: {},
   none: {
