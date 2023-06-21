@@ -26,6 +26,10 @@ export default function Cam() {
 
   const { width, height } = Dimensions.get("window");
 
+  const [imageURI, setImageURI] = useState("");
+
+  const [isActive, setIsActive] = useState(true);
+
   if (status === null) {
     requestPermission();
   }
@@ -45,44 +49,59 @@ export default function Cam() {
     }
   };
 
-  const [isActive, setIsActive] = useState(true);
-
   const showPicture = () => {
     if (isActive === false) {
+      takeScreenShot();
       setIsActive(true);
     } else {
       setIsActive(false);
     }
-    takeScreenShot();
   };
 
-  const [imageURI, setImageURI] = useState("");
-  const [savedImagePath, setSavedImagePath] = useState("");
-
   const takeScreenShot = () => {
-    if (isActive === false) {
-      captureScreen({
-        format: "jpg",
-        quality: 0.8,
-        height: height,
-        width: width,
-      }).then(
-        (uri) => {
-          setSavedImagePath(uri);
-          setImageURI(uri);
+    captureScreen({
+      format: "jpg",
+      quality: 0.8,
+      height: height,
+      width: width,
+    }).then(
+      (uri) => {
+        console.log(uri);
+        setImageURI(uri);
+        console.log("aaaaa " + imageURI);
+        cropPicture();
+      },
+      (error) => console.error("Oops, Something Went Wrong", error)
+    );
+  };
+
+  const cropPicture = async () => {
+    console.log("bbbbb " + imageURI);
+    const manipResult = await ImageManipulator.manipulateAsync(
+      imageURI,
+      [
+        { rotate: 0 },
+        {
+          crop: {
+            originY: 200,
+            originX: 0,
+            height: height,
+            width: width,
+          },
         },
-        (error) => console.error("Oops, Something Went Wrong", error)
-      );
-    } else {
-    }
+      ],
+      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    let res = manipResult.uri;
+    setImageURI(manipResult.uri);
+    console.log("1 " + manipResult.uri);
+    console.log("2 " + imageURI);
+    console.log("3 " + res);
   };
 
   const downloadPicture = () => {
-    if (imageURI != "") {
-      MediaLibrary.saveToLibraryAsync(imageURI);
-    } else {
-      (error) => console.error("No imageURI!", error);
-    }
+    console.log("a1");
+    MediaLibrary.saveToLibraryAsync(imageURI);
   };
 
   if (hasCameraPermission === false) {
@@ -127,16 +146,8 @@ export default function Cam() {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity
-        style={isActive ? styles.saveButton : styles.none}
-        onPress={takeScreenShot}
-      >
-        <MaterialCommunityIcons
-          name="download"
-          size={36}
-          color="white"
-          onPress={downloadPicture}
-        />
+      <TouchableOpacity style={styles.saveButton} onPress={downloadPicture()}>
+        <MaterialCommunityIcons name="download" size={36} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={showPicture}>
         {image && (
