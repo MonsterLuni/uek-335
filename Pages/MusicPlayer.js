@@ -65,7 +65,7 @@ export default function MusicPlayer() {
     if(!startsound || forceReload == true){
       console.log(id);
       startsound = (await Audio.Sound.createAsync(songs[id].path)).sound;
-      duration = (await Audio.Sound.createAsync(songs[id].path)).status.playableDurationMillis;
+      duration = (await Audio.Sound.createAsync(songs[id].path)).status.durationMillis;
       setSound(startsound);
       setPlayTime(((duration / 1000)/60).toFixed(2).slice(0,-3).padStart(2,"0") + ":" + ((duration/1000) % 60).toFixed(0).padStart(2,"0"));
       setPlayTimeSeconds(duration/1000);
