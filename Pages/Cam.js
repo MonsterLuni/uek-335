@@ -14,7 +14,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ImageManipulator from "expo-image-manipulator";
 
 export default function Cam() {
-  const ref = React.useRef(null);
   const imageRef = useRef();
   const [hasMediaPermission, setHasMediaPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -27,6 +26,7 @@ export default function Cam() {
   const [isActive, setIsActive] = useState(true);
   const [isDownloadable, setisDownloadable] = useState(false);
 
+  //Ask for Camera and Medialibrary permissions
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -39,6 +39,7 @@ export default function Cam() {
     })();
   }, []);
 
+  //Function to take Picture with Camera
   const takePicture = async () => {
     if (camera) {
       const data = await camera.takePictureAsync(null);
@@ -47,6 +48,7 @@ export default function Cam() {
     }
   };
 
+  //Switches isActive, used for Preview Picture
   const showPicture = () => {
     if (isActive === false) {
       takeScreenShot();
@@ -56,6 +58,7 @@ export default function Cam() {
     }
   };
 
+  //Function to take a screenshot
   const takeScreenShot = () => {
     captureScreen({
       format: "jpg",
@@ -65,19 +68,23 @@ export default function Cam() {
     })
       .then(
         (uri) => {
-          console.log(uri);
+          // Sets ImageURI to uri
           setImageURI(uri);
-          console.log("takeScreenShot " + imageURI);
         },
+        // If an error occures, shows the error
         (error) => console.error("Error ", error)
       )
+      //Crops the Screnshot
       .then(cropPicture());
+    //If cropImageURI isn't none activates the Download Button
     if (isDownloadable === false && cropImageURI != "") {
       setisDownloadable(true);
     }
   };
 
+  //Function to crop Picture
   const cropPicture = async () => {
+    //Used to determine the y position of the Picture to Crop
     const barHeight = (height / 100) * 21;
     const manipResult = await ImageManipulator.manipulateAsync(
       imageURI,
@@ -93,13 +100,15 @@ export default function Cam() {
       ],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
+    //Sets cropImageURI to cropped image
     setcropImageURI(manipResult.uri);
   };
 
+  //Function to download the cropped picture
   const downloadPicture = () => {
     MediaLibrary.saveToLibraryAsync(cropImageURI);
   };
-
+  //What is shown on screen
   return (
     <View style={{ flex: 1 }}>
       <Image
@@ -151,6 +160,7 @@ export default function Cam() {
     </View>
   );
 }
+//Styles
 const styles = StyleSheet.create({
   cameraContainer: {
     flex: 1,
