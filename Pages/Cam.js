@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,36 +9,33 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import ViewShot, { captureRef, captureScreen } from "react-native-view-shot";
+import ViewShot, { captureScreen } from "react-native-view-shot";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ImageManipulator from "expo-image-manipulator";
 
 export default function Cam() {
   const ref = React.useRef(null);
   const imageRef = useRef();
-
-  const [status, requestPermission] = MediaLibrary.usePermissions();
-
+  const [hasMediaPermission, setHasMediaPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.front);
-
   const { width, height } = Dimensions.get("window");
-
   const [imageURI, setImageURI] = useState("");
   const [cropImageURI, setcropImageURI] = useState("");
-
   const [isActive, setIsActive] = useState(true);
-
-  if (status === null) {
-    requestPermission();
-  }
+  const [isDownloadable, setisDownloadable] = useState(false);
 
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === "granted");
+      const mediaStatus = await MediaLibrary.requestPermissionsAsync();
+      setHasMediaPermission(mediaStatus.status === "granted");
+      if (hasCameraPermission === false && hasMediaPermission === false) {
+        return <Text>No Permission</Text>;
+      }
     })();
   }, []);
 
@@ -46,7 +43,7 @@ export default function Cam() {
     if (camera) {
       const data = await camera.takePictureAsync(null);
       setImage(data.uri);
-      /*MediaLibrary.saveToLibraryAsync(data.uri); */
+      MediaLibrary.saveToLibraryAsync(data.uri);
     }
   };
 
@@ -62,29 +59,32 @@ export default function Cam() {
   const takeScreenShot = () => {
     captureScreen({
       format: "jpg",
-      quality: 0.8,
+      quality: 1,
       height: height,
       width: width,
-    }).then(
-      (uri) => {
-        console.log(uri);
-        setImageURI(uri);
-        console.log("aaaaa " + imageURI);
-        cropPicture();
-      },
-      (error) => console.error("Oops, Something Went Wrong", error)
-    );
+    })
+      .then(
+        (uri) => {
+          console.log(uri);
+          setImageURI(uri);
+          console.log("takeScreenShot " + imageURI);
+        },
+        (error) => console.error("Error ", error)
+      )
+      .then(cropPicture());
+    if (isDownloadable === false && cropImageURI != "") {
+      setisDownloadable(true);
+    }
   };
 
   const cropPicture = async () => {
-    console.log("bbbbb " + imageURI);
+    const barHeight = (height / 100) * 21;
     const manipResult = await ImageManipulator.manipulateAsync(
       imageURI,
       [
-        { rotate: 0 },
         {
           crop: {
-            originY: 185,
+            originY: barHeight,
             originX: 0,
             height: height * 1.6,
             width: width * 2,
@@ -93,27 +93,12 @@ export default function Cam() {
       ],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
-    let res = manipResult.uri;
     setcropImageURI(manipResult.uri);
-    console.log("1 " + manipResult.uri);
-    console.log("2 " + cropImageURI);
-    console.log("3 " + res);
   };
 
   const downloadPicture = () => {
-    console.log("a1");
-    console.log(cropImageURI);
     MediaLibrary.saveToLibraryAsync(cropImageURI);
-    console.log("a2");
   };
-
-  if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
-  {
-    image && <Image source={{ uri: image }} style={{ flex: 1 }} />;
-  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -147,7 +132,10 @@ export default function Cam() {
           <MaterialCommunityIcons name="camera" size={36} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.saveButton} onPress={downloadPicture}>
+        <TouchableOpacity
+          style={isDownloadable ? styles.saveButton : styles.none}
+          onPress={downloadPicture}
+        >
           <MaterialCommunityIcons name="download" size={36} color="white" />
         </TouchableOpacity>
       </View>
@@ -164,12 +152,6 @@ export default function Cam() {
   );
 }
 const styles = StyleSheet.create({
-  test: {
-    position: "absolute",
-    width: 200,
-    height: 400,
-    top: 50,
-  },
   cameraContainer: {
     flex: 1,
     flexDirection: "row",
@@ -227,8 +209,12 @@ const styles = StyleSheet.create({
   },
   preImgGreat: {
     position: "absolute",
-    height: Dimensions.get("window").height - 160,
-    width: Dimensions.get("window").width,
+    height:
+      Dimensions.get("window").height +
+      (Dimensions.get("window").height / 100) * 3,
+    width:
+      Dimensions.get("window").width +
+      (Dimensions.get("window").width / 100) * 3,
     bottom: 0,
     left: 0,
     borderRadius: 10,
