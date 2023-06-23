@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { ScrollView, StyleSheet, Text, View} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 export default function Salary() {
@@ -89,7 +89,7 @@ export default function Salary() {
         <View style={styles.separator} />
       </View>
       <Text style={styles.ergebniss}>{lohnrechner}</Text>
-      <View style={{marginBottom: 100}}>
+      <ScrollView style={{marginBottom: 100}}>
         <View style={styles.dropdownContainer}>
           <Text style={styles.label}></Text>
           <Picker
@@ -128,7 +128,7 @@ export default function Salary() {
             ))}
           </Picker>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
